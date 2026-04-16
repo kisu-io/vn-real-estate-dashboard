@@ -12776,6 +12776,26 @@ const MONTHLY_PRICE_TIERS = [
     "listings":1450
   }
 ];
+/* =====================================================================
+ * LIVE DATA — freshly crawled from Nhà Tốt (www.nhatot.com)
+ * Crawled: 2026-04-16 · 30 listings · HCMC only · via projectdiscovery/katana + Playwright
+ * This is a live sample, not a full market aggregate.
+ * ===================================================================== */
+const LIVE_NHATOT_META = {
+  "crawled_at": "2026-04-16",
+  "source": "nhatot.com",
+  "total_listings": 30,
+  "districts_sampled": 3,
+  "tool": "projectdiscovery/katana + Playwright"
+};
+const LIVE_NHATOT_STATS = [
+  { "city": "HCMC", "district_name": "Quận 7",            "property_type_name": "Đất",              "listings": 3,  "median_ppm2": 109523809, "median_price_vnd": 13800000000, "median_area": 126   },
+  { "city": "HCMC", "district_name": "Quận Bình Thạnh",   "property_type_name": "Căn hộ chung cư",  "listings": 3,  "median_ppm2": 61702127,  "median_price_vnd": 3950000000,  "median_area": 53.5  },
+  { "city": "HCMC", "district_name": "Quận Bình Thạnh",   "property_type_name": "Nhà",              "listings": 3,  "median_ppm2": 155111111, "median_price_vnd": 7300000000,  "median_area": 60    },
+  { "city": "HCMC", "district_name": "Quận Bình Thạnh",   "property_type_name": "Đất",              "listings": 2,  "median_ppm2": 133466755, "median_price_vnd": 6260000000,  "median_area": 46.5  },
+  { "city": "HCMC", "district_name": "Thành phố Thủ Đức", "property_type_name": "Căn hộ chung cư",  "listings": 16, "median_ppm2": 54732636,  "median_price_vnd": 3725000000,  "median_area": 69.5  },
+  { "city": "HCMC", "district_name": "Thành phố Thủ Đức", "property_type_name": "Đất",              "listings": 3,  "median_ppm2": 44032921,  "median_price_vnd": 10700000000, "median_area": 243   }
+];
 const DISTRICT_PROPERTY_STATS = [
   {
     "city":"Da Nang",
@@ -15771,6 +15791,73 @@ function Footer() {
 }
 
 /* =====================================================================
+ * Live Nhatot Section — freshly scraped listings
+ * ===================================================================== */
+function LiveNhatotSection() {
+  const rows = LIVE_NHATOT_STATS;
+  const total = rows.reduce((s, r) => s + r.listings, 0);
+
+  return (
+    <Card className="border-rose-200">
+      <div className="px-6 pt-5 pb-3 flex items-start justify-between gap-4 border-b border-slate-100">
+        <div className="flex items-start gap-3">
+          <span className="relative flex h-3 w-3 mt-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+          </span>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              Live from Nhà Tốt — {LIVE_NHATOT_META.crawled_at}
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {total} fresh listings · {LIVE_NHATOT_META.districts_sampled} HCMC districts · crawled via {LIVE_NHATOT_META.tool}
+            </p>
+          </div>
+        </div>
+        <a href="https://www.nhatot.com/mua-ban-bat-dong-san"
+           target="_blank" rel="noopener"
+           className="text-xs px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50">
+          nhatot.com ↗
+        </a>
+      </div>
+      <CardBody>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm num-mono">
+            <thead>
+              <tr className="text-xs text-slate-500 border-b border-slate-100">
+                <th className="text-left py-2 px-2 font-medium">District</th>
+                <th className="text-left py-2 px-2 font-medium">Type</th>
+                <th className="text-right py-2 px-2 font-medium">Listings</th>
+                <th className="text-right py-2 px-2 font-medium">Median Price</th>
+                <th className="text-right py-2 px-2 font-medium">USD Approx</th>
+                <th className="text-right py-2 px-2 font-medium">Price / m²</th>
+                <th className="text-right py-2 px-2 font-medium">Median Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <td className="py-2 px-2 text-slate-900 font-medium">{r.district_name}</td>
+                  <td className="py-2 px-2 text-slate-700">{r.property_type_name}</td>
+                  <td className="py-2 px-2 text-right text-slate-900">{r.listings}</td>
+                  <td className="py-2 px-2 text-right text-slate-900">{fmtVND(r.median_price_vnd)}</td>
+                  <td className="py-2 px-2 text-right text-slate-500">{fmtUSD(r.median_price_vnd)}</td>
+                  <td className="py-2 px-2 text-right text-slate-900">{fmtPpm2(r.median_ppm2)}</td>
+                  <td className="py-2 px-2 text-right text-slate-700">{r.median_area} m²</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-slate-400 mt-3">
+          Sample only — not a full market aggregate. The historical panels below reflect 2.46M cleaned listings (Jun 2025 – Mar 2026).
+        </p>
+      </CardBody>
+    </Card>
+  );
+}
+
+/* =====================================================================
  * App shell
  * ===================================================================== */
 function App() {
@@ -15778,6 +15865,7 @@ function App() {
     <div className="min-h-screen">
       <Header />
       <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        <LiveNhatotSection />
         <KPIRow />
         <PricingSection />
         <SupplySection />
